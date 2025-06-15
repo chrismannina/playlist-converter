@@ -4,10 +4,20 @@ class SpotifyService {
   constructor(tokens) {
     this.tokens = tokens;
     this.baseURL = 'https://api.spotify.com/v1';
+    this.lastRequestTime = 0;
+    this.minRequestInterval = 100; // Minimum 100ms between requests
   }
 
   async makeRequest(endpoint, method = 'GET', data = null) {
     try {
+      // Rate limiting protection
+      const now = Date.now();
+      const timeSinceLastRequest = now - this.lastRequestTime;
+      if (timeSinceLastRequest < this.minRequestInterval) {
+        await new Promise(resolve => setTimeout(resolve, this.minRequestInterval - timeSinceLastRequest));
+      }
+      this.lastRequestTime = Date.now();
+
       const config = {
         method,
         url: `${this.baseURL}${endpoint}`,
@@ -27,6 +37,21 @@ class SpotifyService {
       if (error.response?.status === 401) {
         throw new Error('Spotify authentication expired');
       }
+      if (error.response?.status === 429) {
+        // Rate limited - wait and retry once
+        const retryAfter = error.response.headers['retry-after'] || 1;
+        console.log(`Spotify rate limited, waiting ${retryAfter} seconds...`);
+        await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
+        
+        // Retry the request once
+        try {
+          const response = await axios(config);
+          return response.data;
+        } catch (retryError) {
+          throw new Error('Spotify API rate limit exceeded');
+        }
+      }
+      console.error('Spotify API error:', error.response?.status, error.response?.data);
       throw error;
     }
   }

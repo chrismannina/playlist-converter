@@ -246,7 +246,7 @@ const Transfer: React.FC = () => {
     if (sourcePlatform) {
       loadPlaylists(sourcePlatform);
     }
-  }, [sourcePlatform, loadPlaylists]);
+  }, [sourcePlatform]);
 
   useEffect(() => {
     if (selectedSourcePlaylist && !playlistName) {
