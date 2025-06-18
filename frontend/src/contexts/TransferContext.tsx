@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
 import { TransferStatus, TransferRequest, Playlist, Track, Platform } from '../types';
 import { transferAPI, playlistAPI } from '../services/api';
 
@@ -51,7 +51,7 @@ export const TransferProvider: React.FC<TransferProviderProps> = ({ children }) 
   const [sourcePlaylistTracks, setSourcePlaylistTracks] = useState<Track[]>([]);
   const [selectedSourcePlaylist, setSelectedSourcePlaylist] = useState<Playlist | null>(null);
 
-  const startTransfer = async (request: TransferRequest): Promise<string> => {
+  const startTransfer = useCallback(async (request: TransferRequest): Promise<string> => {
     try {
       setLoading(true);
       setError(null);
@@ -70,9 +70,9 @@ export const TransferProvider: React.FC<TransferProviderProps> = ({ children }) 
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const pollTransferStatus = async (transferId: string) => {
+  const pollTransferStatus = useCallback(async (transferId: string) => {
     const poll = async () => {
       try {
         const status = await transferAPI.getTransferStatus(transferId);
@@ -89,9 +89,9 @@ export const TransferProvider: React.FC<TransferProviderProps> = ({ children }) 
     };
     
     poll();
-  };
+  }, []);
 
-  const cancelTransfer = async (transferId: string): Promise<void> => {
+  const cancelTransfer = useCallback(async (transferId: string): Promise<void> => {
     try {
       setError(null);
       await transferAPI.cancelTransfer(transferId);
@@ -101,9 +101,9 @@ export const TransferProvider: React.FC<TransferProviderProps> = ({ children }) 
       setError(err.response?.data?.error || 'Failed to cancel transfer');
       throw err;
     }
-  };
+  }, []);
 
-  const refreshTransferStatus = async (transferId: string): Promise<void> => {
+  const refreshTransferStatus = useCallback(async (transferId: string): Promise<void> => {
     try {
       setError(null);
       const status = await transferAPI.getTransferStatus(transferId);
@@ -113,9 +113,9 @@ export const TransferProvider: React.FC<TransferProviderProps> = ({ children }) 
       setError(err.response?.data?.error || 'Failed to refresh transfer status');
       throw err;
     }
-  };
+  }, []);
 
-  const loadTransferHistory = async (): Promise<void> => {
+  const loadTransferHistory = useCallback(async (): Promise<void> => {
     try {
       setError(null);
       const history = await transferAPI.getTransferHistory();
@@ -125,14 +125,16 @@ export const TransferProvider: React.FC<TransferProviderProps> = ({ children }) 
       setError(err.response?.data?.error || 'Failed to load transfer history');
       throw err;
     }
-  };
+  }, []);
 
-  const loadPlaylists = async (platform: Platform): Promise<void> => {
+  const loadPlaylists = useCallback(async (platform: Platform): Promise<void> => {
     try {
       setLoading(true);
       setError(null);
+      console.log(`🔍 [FRONTEND] Loading playlists for platform: ${platform}`);
       const playlists = await playlistAPI.getPlaylists(platform);
       setSourcePlaylists(playlists);
+      console.log(`✅ [FRONTEND] Loaded ${playlists.length} playlists for ${platform}`);
     } catch (err: any) {
       console.error('Error loading playlists:', err);
       setError(err.response?.data?.error || `Failed to load ${platform} playlists`);
@@ -140,9 +142,9 @@ export const TransferProvider: React.FC<TransferProviderProps> = ({ children }) 
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const loadPlaylistTracks = async (platform: Platform, playlistId: string): Promise<void> => {
+  const loadPlaylistTracks = useCallback(async (platform: Platform, playlistId: string): Promise<void> => {
     try {
       setLoading(true);
       setError(null);
@@ -155,19 +157,19 @@ export const TransferProvider: React.FC<TransferProviderProps> = ({ children }) 
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const selectSourcePlaylist = (playlist: Playlist | null) => {
+  const selectSourcePlaylist = useCallback((playlist: Playlist | null) => {
     setSelectedSourcePlaylist(playlist);
-  };
+  }, []);
 
-  const clearTransferData = () => {
+  const clearTransferData = useCallback(() => {
     setCurrentTransfer(null);
     setSourcePlaylists([]);
     setSourcePlaylistTracks([]);
     setSelectedSourcePlaylist(null);
     setError(null);
-  };
+  }, []);
 
   const value: TransferContextType = {
     currentTransfer,
