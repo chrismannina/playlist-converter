@@ -9,7 +9,7 @@ interface AuthContextType {
   error: string | null;
   loginSpotify: () => void;
   loginAppleMusic: (userToken: string) => Promise<void>;
-  loginYouTubeMusic: (headers: any) => Promise<void>;
+  loginYoutubeMusic: (headersRaw: string) => Promise<void>;
   logout: (platform: Platform) => Promise<void>;
   refreshAuthStatus: () => Promise<void>;
 }
@@ -69,10 +69,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const loginYouTubeMusic = async (headers: any) => {
+  const loginYoutubeMusic = async (headersRaw: string) => {
     try {
       setError(null);
-      await authAPI.loginYouTubeMusic(headers);
+      await authAPI.loginYoutubeMusic(headersRaw);
       await refreshAuthStatus();
     } catch (err) {
       console.error('YouTube Music login error:', err);
@@ -121,7 +121,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     error,
     loginSpotify,
     loginAppleMusic,
-    loginYouTubeMusic,
+    loginYoutubeMusic,
     logout,
     refreshAuthStatus,
   };

@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+python-dotenv
+ytmusicapi
+spotipy
+httpx
+python-jose[cryptography]
+pydantic
+starlette
+itsdangerous
+aiohttp 

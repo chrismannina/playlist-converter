@@ -1,0 +1,24 @@
+accept: */*
+accept-encoding: gzip, deflate, br, zstd
+accept-language: en-US,en;q=0.9,en-CA;q=0.8
+authorization: SAPISIDHASH 1750130642_276f5b56150a528cff98b2643757d654398d3466_u SAPISID1PHASH 1750130642_276f5b56150a528cff98b2643757d654398d3466_u SAPISID3PHASH 1750130642_276f5b56150a528cff98b2643757d654398d3466_u
+content-length: 3118
+content-type: application/json
+cookie: YSC=hMaxpFq-Anw; __Secure-3PAPISID=BFH93LL4MizmPMqG/AsbXIxbe_KWhc5nxl; HSID=A8SgSdKigwAJsSLkt; SSID=A1PV1EKirNq0NglG_; APISID=dPbT9phJJew64c5w/ARULVz4KpdhsfwGPI; SAPISID=BFH93LL4MizmPMqG/AsbXIxbe_KWhc5nxl; __Secure-1PAPISID=BFH93LL4MizmPMqG/AsbXIxbe_KWhc5nxl; LOGIN_INFO=AFmmF2swRQIhAMTlrLnpqqCI9zU5Hsw63QfscsqeO1E9O91HRRfxDEz9AiAOxG5dpgPy57ixQpUPKvmJP19ZwHUymDNASUc30N_lbQ:QUQ3MjNmdzM0ZGJXcFZEbUNqTm9PR1BCckxxQVNLNURHWmFnYjVkTEI1cm8ySlJCVFUzdldSNUdQMXdEME52VHpnTnVsMEdQZ3VGdElOLU11MVoyS09IQ3FyS0NMc0JVNWdZbjh3U01odFp6QkNKak5SYk54WUNHZzdkNHl1T0dmUTk1TC05MFB3NGFoTjNyVHVQeTJZYnZ4ODh5b09ocUpn; _ga=GA1.2.1468152464.1741141455; _ga_R3HTL8G9BH=GS1.2.1741141455.1.0.1741141455.0.0.0; _ga_5RPMD1E2GM=GS1.1.1741141455.1.1.1741141456.59.0.0; wide=1; VISITOR_PRIVACY_METADATA=CgJVUxIEGgAgVA%3D%3D; VISITOR_INFO1_LIVE=rlE0r5mmqZ0; SID=g.a000xQhzapGOOAEiAYgkQC4DGxSHZonx9IJw1D3c56HNgowNaHtbtmfTmAWOGHjvTObZw527lAACgYKAWgSARISFQHGX2MiGIT8v8GGWCtF-tcNt3eLCRoVAUF8yKpWMvoBtPoFmbrcfswBgwTv0076; __Secure-1PSID=g.a000xQhzapGOOAEiAYgkQC4DGxSHZonx9IJw1D3c56HNgowNaHtbuIuJrTgQUVLLLH90i-YreQACgYKAc8SARISFQHGX2Mi_U6WXcqe_nalho8rDmOCYRoVAUF8yKppxTvsnQD-j8Y6fyE5Eait0076; __Secure-3PSID=g.a000xQhzapGOOAEiAYgkQC4DGxSHZonx9IJw1D3c56HNgowNaHtb0Df9dQGOjBvACqU0XVNqlAACgYKAUESARISFQHGX2Mis3TuC0DpNfGEU2yTuT9uTRoVAUF8yKrv6eKAcW47GfeQ0h3VHIxc0076; __Secure-1PSIDTS=sidts-CjEB5H03P3OLDgtpDdxTHrrn2UNGACAh1ohgLe0CpmgjwePLQgdLOJ01hrVF8quUTJdoEAA; __Secure-3PSIDTS=sidts-CjEB5H03P3OLDgtpDdxTHrrn2UNGACAh1ohgLe0CpmgjwePLQgdLOJ01hrVF8quUTJdoEAA; PREF=f6=40000080&tz=America.Detroit&f4=4000000&f7=100&repeat=NONE; __Secure-ROLLOUT_TOKEN=CLX4utrU4K7RNBCJsfzGlb2LAxjh6uTDtPeNAw%3D%3D; SIDCC=AKEyXzWa1S-iFaUOMRaC-MF3IztUbISXvwRoSutPza5H5LTbz64eKMsM7X1EE37u0ZcQBV8KFmc; __Secure-1PSIDCC=AKEyXzXjNXBW-BuS7ZjiP3qIGtIChEpuvgK8GRl8OwBak8I3JF987eT2fn9LrRmqCD2QVSwN64I; __Secure-3PSIDCC=AKEyXzXWl82iFgHU8-Gy9t4XwVUcjLqdnvWMm4TFRuEYsoZ8-5jaMmUXTE0F5JF10XqFqP7Gc-s; ST-1b=
+origin: https://music.youtube.com
+priority: u=1, i
+referer: https://music.youtube.com/browse/VLPLzDYukNJwZFYAeyYrLsXGgHxlCL7JurgE
+sec-ch-ua: "Microsoft Edge";v="137", "Chromium";v="137", "Not/A)Brand";v="24"
+sec-ch-ua-mobile: ?0
+sec-ch-ua-platform: "macOS"
+sec-fetch-dest: empty
+sec-fetch-mode: same-origin
+sec-fetch-site: same-origin
+sec-gpc: 1
+user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36 Edg/137.0.0.0
+x-goog-authuser: 0
+x-goog-visitor-id: CgtybEUwcjVtbXFaMCi3v8PCBjIKCgJVUxIEGgAgVA%3D%3D
+x-origin: https://music.youtube.com
+x-youtube-bootstrap-logged-in: true
+x-youtube-client-name: 67
+x-youtube-client-version: 1.20250610.09.01

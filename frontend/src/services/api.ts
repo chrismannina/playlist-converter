@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Platform, Playlist, Track, AuthStatus, UserInfo, TransferRequest, TransferStatus } from '../types';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://work-2-fkgngfnzdhpkfrwq.prod-runtime.all-hands.dev';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -37,9 +37,8 @@ export const authAPI = {
     await api.post('/auth/apple-music', { userToken });
   },
 
-  // YouTube Music authentication
-  loginYouTubeMusic: async (headers: any): Promise<void> => {
-    await api.post('/auth/youtube-music', { headers });
+  loginYoutubeMusic: async (headersRaw: string): Promise<void> => {
+    await api.post('/auth/youtube-music', { headers_raw: headersRaw });
   },
 
   // Logout

@@ -157,7 +157,7 @@ const StartButton = styled.button`
   }
 `;
 
-const YouTubeMusicModal = styled.div<{ $show: boolean }>`
+const Modal = styled.div<{ $show: boolean }>`
   display: ${props => props.$show ? 'flex' : 'none'};
   position: fixed;
   top: 0;
@@ -171,35 +171,43 @@ const YouTubeMusicModal = styled.div<{ $show: boolean }>`
 `;
 
 const ModalContent = styled.div`
-  background: white;
+  background: #1a1a1a;
   border-radius: 16px;
   padding: 2rem;
-  max-width: 500px;
+  max-width: 600px;
   width: 90%;
   max-height: 80vh;
   overflow-y: auto;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 `;
 
 const ModalTitle = styled.h3`
   margin-bottom: 1rem;
-  color: #333;
+  color: white;
 `;
 
 const ModalText = styled.p`
   margin-bottom: 1rem;
-  color: #666;
+  color: rgba(255, 255, 255, 0.8);
   line-height: 1.5;
 `;
 
 const TextArea = styled.textarea`
   width: 100%;
-  height: 100px;
+  height: 120px;
   margin-bottom: 1rem;
   padding: 0.75rem;
-  border: 1px solid #ddd;
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
   font-family: monospace;
   font-size: 0.875rem;
+  resize: vertical;
+  
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+  }
 `;
 
 const ModalButtons = styled.div`
@@ -209,9 +217,9 @@ const ModalButtons = styled.div`
 `;
 
 const ModalButton = styled.button<{ $primary?: boolean }>`
-  background: ${props => props.$primary ? '#667eea' : '#f5f5f5'};
-  color: ${props => props.$primary ? 'white' : '#333'};
-  border: none;
+  background: ${props => props.$primary ? '#667eea' : 'rgba(255, 255, 255, 0.1)'};
+  color: white;
+  border: 1px solid ${props => props.$primary ? '#667eea' : 'rgba(255, 255, 255, 0.3)'};
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
   cursor: pointer;
@@ -224,7 +232,7 @@ const ModalButton = styled.button<{ $primary?: boolean }>`
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
-  const { authStatus, loginSpotify, loginAppleMusic, loginYouTubeMusic, logout } = useAuth();
+  const { authStatus, loginSpotify, loginYoutubeMusic, logout } = useAuth();
   const [showYouTubeMusicModal, setShowYouTubeMusicModal] = useState(false);
   const [youTubeMusicHeaders, setYouTubeMusicHeaders] = useState('');
 
@@ -254,22 +262,21 @@ const Home: React.FC = () => {
       switch (platform) {
         case 'spotify':
           if (authStatus.spotify) {
-            await logout(platform);
+            await logout('spotify');
           } else {
             loginSpotify();
           }
           break;
         case 'apple-music':
           if (authStatus.appleMusic) {
-            await logout(platform);
+            await logout('apple-music');
           } else {
-            // Apple Music requires MusicKit JS integration
-            alert('Apple Music authentication requires MusicKit JS setup. This is a demo limitation.');
+            alert('Apple Music authentication requires MusicKit JS setup. Please use the Transfer page for full functionality.');
           }
           break;
         case 'youtube-music':
           if (authStatus.youtubeMusic) {
-            await logout(platform);
+            await logout('youtube-music');
           } else {
             setShowYouTubeMusicModal(true);
           }
@@ -282,23 +289,25 @@ const Home: React.FC = () => {
 
   const handleYouTubeMusicAuth = async () => {
     try {
-      const headers = JSON.parse(youTubeMusicHeaders);
-      await loginYouTubeMusic(headers);
+      await loginYoutubeMusic(youTubeMusicHeaders);
       setShowYouTubeMusicModal(false);
       setYouTubeMusicHeaders('');
     } catch (error) {
-      alert('Invalid headers format. Please provide valid JSON.');
+      console.error('YouTube Music authentication error:', error);
+      alert('Authentication failed. Please check your headers and try again.');
     }
   };
 
-  const canStartTransfer = Object.values(authStatus).filter(Boolean).length >= 2;
+  const handleStartTransfer = () => {
+    // Implement the logic to start the transfer
+  };
 
   return (
     <Container>
       <Hero>
         <Title>Transfer Your Music</Title>
         <Subtitle>
-          Seamlessly move your playlists between Spotify, Apple Music, and YouTube Music.
+          Seamlessly move your playlists between Spotify and Apple Music.
           Our intelligent matching engine ensures your music follows you everywhere.
         </Subtitle>
       </Hero>
@@ -332,59 +341,76 @@ const Home: React.FC = () => {
       </Features>
 
       <AuthSection>
-        <AuthTitle>Connect Your Music Services</AuthTitle>
+        <AuthTitle>Connect Your Services</AuthTitle>
         <PlatformGrid>
-          {platforms.map((platform) => (
-            <PlatformCard key={platform.id} $authenticated={platform.authenticated}>
-              <PlatformIcon>{platform.icon}</PlatformIcon>
-              <PlatformName>{platform.name}</PlatformName>
+          {platforms.map(({ id, name, icon, authenticated }) => (
+            <PlatformCard key={id} $authenticated={authenticated}>
+              <PlatformIcon>{icon}</PlatformIcon>
+              <PlatformName>{name}</PlatformName>
               <AuthButton
-                $authenticated={platform.authenticated}
-                onClick={() => handlePlatformAuth(platform.id)}
+                onClick={() => handlePlatformAuth(id)}
+                $authenticated={authenticated}
               >
-                {platform.authenticated ? 'Disconnect' : 'Connect'}
+                {authenticated ? 'Disconnect' : 'Connect'}
               </AuthButton>
             </PlatformCard>
           ))}
         </PlatformGrid>
-
-        <StartButton
-          disabled={!canStartTransfer}
-          onClick={() => navigate('/transfer')}
+        <StartButton 
+          onClick={handleStartTransfer}
+          disabled={Object.values(authStatus).filter(Boolean).length < 2}
         >
-          {canStartTransfer ? 'Start Transfer' : 'Connect at least 2 services to continue'}
+          Start Transfer
         </StartButton>
       </AuthSection>
 
-      <YouTubeMusicModal $show={showYouTubeMusicModal}>
+      {/* YouTube Music Modal */}
+      <Modal $show={showYouTubeMusicModal}>
         <ModalContent>
-          <ModalTitle>YouTube Music Authentication</ModalTitle>
+          <ModalTitle>Connect to YouTube Music</ModalTitle>
           <ModalText>
-            YouTube Music doesn't have an official public API. To authenticate, you'll need to provide
-            authentication headers from your browser:
+            To connect to YouTube Music, you need to provide authentication headers from your browser.
           </ModalText>
           <ModalText>
+            <strong>Instructions:</strong><br/>
             1. Open YouTube Music in your browser and log in<br/>
             2. Open Developer Tools (F12)<br/>
             3. Go to Network tab and refresh the page<br/>
-            4. Find a request to music.youtube.com<br/>
-            5. Copy the request headers (cookie, x-goog-authuser, etc.)
+            4. Find a POST request to music.youtube.com/youtubei/v1/browse<br/>
+            5. Right-click the request and select "Copy as cURL" or "Copy request headers"<br/>
+            6. Paste the headers below (we need the complete raw headers including Authorization)
+          </ModalText>
+          <ModalText>
+            <strong>Example format:</strong><br/>
+            accept: */*<br/>
+            authorization: SAPISIDHASH ...<br/>
+            cookie: YSC=...<br/>
+            x-goog-authuser: 0<br/>
+            ...
           </ModalText>
           <TextArea
-            placeholder='{"cookie": "...", "x-goog-authuser": "0", ...}'
             value={youTubeMusicHeaders}
             onChange={(e) => setYouTubeMusicHeaders(e.target.value)}
+            placeholder='accept: */*
+authorization: SAPISIDHASH_1234567890_abcdef...
+cookie: YSC=abc123; SAPISID=...; 
+x-goog-authuser: 0
+x-origin: https://music.youtube.com
+...'
           />
           <ModalButtons>
-            <ModalButton onClick={() => setShowYouTubeMusicModal(false)}>
+            <ModalButton onClick={() => {
+              setShowYouTubeMusicModal(false);
+              setYouTubeMusicHeaders('');
+            }}>
               Cancel
             </ModalButton>
             <ModalButton $primary onClick={handleYouTubeMusicAuth}>
-              Authenticate
+              Connect
             </ModalButton>
           </ModalButtons>
         </ModalContent>
-      </YouTubeMusicModal>
+      </Modal>
     </Container>
   );
 };

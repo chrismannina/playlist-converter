@@ -71,7 +71,7 @@ cp .env.example .env
 Backend:
 ```bash
 cd backend
-npm run dev
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 Frontend (in a new terminal):
