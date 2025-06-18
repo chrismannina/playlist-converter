@@ -73,24 +73,60 @@ async def apple_music_login(request: Request, user_token: dict):
 # YouTube Music authentication
 @router.post('/youtube-music')
 async def youtube_music_login(request: Request, headers_data: dict):
+    print(f"[DEBUG] YouTube Music login attempt: {headers_data.keys()}")
+    
     headers_raw = headers_data.get('headers_raw')
     if not headers_raw:
+        print("[DEBUG] Missing headers_raw")
         return Response(content="Missing headers_raw", status_code=400)
 
+    print(f"[DEBUG] Headers received, length: {len(headers_raw)}")
+    
     try:
         ytm_service = YouTubeMusicService(headers_raw=headers_raw)
+        print("[DEBUG] YouTubeMusicService created successfully")
+        
         # Run synchronous test_authentication in a thread to avoid blocking
-        if not await asyncio.to_thread(ytm_service.test_authentication):
+        auth_result = await asyncio.to_thread(ytm_service.test_authentication)
+        print(f"[DEBUG] Authentication test result: {auth_result}")
+        
+        if not auth_result:
+            print("[DEBUG] Authentication test failed")
             return Response(content="Invalid YouTube Music headers", status_code=401)
     except Exception as e:
-        print(f"Error initializing YouTube Music service: {e}")
+        print(f"[DEBUG] Error initializing YouTube Music service: {e}")
+        import traceback
+        traceback.print_exc()
         return Response(content="Failed to initialize YouTube Music service", status_code=500)
 
-    request.session['youtube_music_headers_raw'] = headers_raw
+    print("[DEBUG] Setting session data")
+    
+    # Test with minimal data first - store headers in a file instead of session
+    import tempfile
+    import os
+    
+    # Create a temp file to store headers
+    temp_dir = tempfile.gettempdir()
+    headers_file = os.path.join(temp_dir, f"ytm_headers_{int(time.time())}.txt")
+    
+    with open(headers_file, 'w') as f:
+        f.write(headers_raw)
+    
+    print(f"[DEBUG] Stored headers in temp file: {headers_file}")
+    
+    # Store only essential data in session
+    request.session['youtube_music_headers_file'] = headers_file
     request.session['youtube_music_auth'] = {
         "authenticated": True,
         "expires_at": int(time.time()) + (24 * 60 * 60 * 7) # 1 week
     }
+    
+    # Explicitly save/commit the session
+    print(f"[DEBUG] Session keys after setting: {list(request.session.keys())}")
+    print(f"[DEBUG] YouTube auth data just set: {request.session.get('youtube_music_auth')}")
+    print(f"[DEBUG] Headers file path stored: {request.session.get('youtube_music_headers_file')}")
+    
+    print("[DEBUG] Session data set, returning success")
     return {"success": True, "message": "YouTube Music authenticated successfully"}
 
 
@@ -99,9 +135,22 @@ async def youtube_music_login(request: Request, headers_data: dict):
 async def get_status(request: Request):
     now = int(time.time())
     
+    print(f"[DEBUG] Checking auth status. Session keys: {list(request.session.keys())}")
+    
     spotify_authed = 'spotify_token' in request.session and request.session['spotify_token'].get('expires_at', 0) > now
     apple_authed = 'apple_music_token' in request.session and request.session['apple_music_token'].get('expires_at', 0) > now
+    
+    # Debug YouTube Music auth check
+    youtube_auth_data = request.session.get('youtube_music_auth')
+    print(f"[DEBUG] YouTube auth data: {youtube_auth_data}")
+    
+    if youtube_auth_data:
+        expires_at = youtube_auth_data.get('expires_at', 0)
+        print(f"[DEBUG] YouTube expires_at: {expires_at}, now: {now}, valid: {expires_at > now}")
+    
     youtube_authed = 'youtube_music_auth' in request.session and request.session['youtube_music_auth'].get('expires_at', 0) > now
+    
+    print(f"[DEBUG] Auth status - Spotify: {spotify_authed}, Apple: {apple_authed}, YouTube: {youtube_authed}")
     
     user_info = UserInfo(
         spotify=request.session.get('spotify_user')
@@ -122,7 +171,7 @@ async def logout(request: Request, platform: str):
     session_keys = {
         'spotify': ['spotify_token', 'spotify_user'],
         'apple-music': ['apple_music_token'],
-        'youtube-music': ['youtube_music_headers_raw', 'youtube_music_auth']
+        'youtube-music': ['youtube_music_headers_file', 'youtube_music_auth']
     }
     
     if platform in session_keys:
