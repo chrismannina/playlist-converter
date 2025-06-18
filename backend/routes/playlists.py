@@ -76,29 +76,38 @@ def get_ytm_service(request: Request) -> YouTubeMusicService:
 def map_spotify_playlist(p: dict) -> Playlist:
     return Playlist(
         id=p['id'],
-        title=p['name'],
-        description=p.get('description'),
+        name=p['name'],
+        description=p.get('description', ''),
         trackCount=p['tracks']['total'],
-        source='spotify'
+        public=p.get('public', True),
+        owner=p.get('owner', {}).get('display_name', 'Unknown'),
+        images=p.get('images', []),
+        platform='spotify'
     )
 
 def map_apple_music_playlist(p: dict) -> Playlist:
     attrs = p.get('attributes', {})
     return Playlist(
         id=p['id'],
-        title=attrs.get('name'),
-        description=attrs.get('description', {}).get('standard'),
+        name=attrs.get('name', 'Unknown Playlist'),
+        description=attrs.get('description', {}).get('standard', ''),
         trackCount=attrs.get('trackCount', 0),
-        source='apple-music'
+        public=attrs.get('isPublic', True),
+        owner='Apple Music User',
+        images=[],
+        platform='apple-music'
     )
 
 def map_ytm_playlist(p: dict) -> Playlist:
     return Playlist(
         id=p['playlistId'],
-        title=p['title'],
-        description=p.get('description'),
+        name=p.get('title', 'Unknown Playlist'),
+        description=p.get('description', ''),
         trackCount=p.get('count', 0),
-        source='youtube-music'
+        public=True,
+        owner='YouTube Music User',
+        images=[],
+        platform='youtube-music'
     )
 
 # --- API Endpoints ---

@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import List, Optional
+from typing import List, Optional, Any
 
 class Track(BaseModel):
     id: str
@@ -10,10 +10,13 @@ class Track(BaseModel):
 
 class Playlist(BaseModel):
     id: str
-    title: str
+    name: str
     description: Optional[str] = None
     track_count: int = Field(..., alias="trackCount")
-    source: str # e.g., "spotify", "apple-music", "youtube-music"
+    public: bool = True
+    owner: str = ""
+    images: List[Any] = []
+    platform: str  # e.g., "spotify", "apple-music", "youtube-music"
 
 class PlaylistDetails(Playlist):
     tracks: List[Track] 
