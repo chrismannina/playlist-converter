@@ -44,19 +44,17 @@ class YouTubeMusicService:
             print(f"YouTube Music auth test failed: {e}")
             return False
 
-    async def get_user_playlists(self):
+    def get_user_playlists(self):
         if not self.client:
             raise Exception("YouTube Music client not initialized.")
         
         # This is a synchronous library, so we call it directly.
-        # If this becomes a performance bottleneck, we can run it
-        # in a thread pool executor.
         playlists = self.client.get_library_playlists()
         
         # Here we would map the raw data to a Pydantic model for consistency
         return playlists
 
-    async def get_playlist_tracks(self, playlist_id: str):
+    def get_playlist_tracks(self, playlist_id: str):
         if not self.client:
             raise Exception("YouTube Music client not initialized.")
             
